@@ -8,6 +8,7 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private ArenaBounds arenaBounds;
     [SerializeField] private Transform target;
     [SerializeField] private PlayerHealth targetHealth;
+    [SerializeField] private EnemyPool enemyPool;
     [SerializeField] private float spawnInterval = 2f;
     [SerializeField] private int maxActiveEnemies = 20;
     [SerializeField] private float minimumSpawnDistance = 4f;
@@ -21,6 +22,10 @@ public sealed class EnemySpawner : MonoBehaviour
     private void Awake()
     {
         spawnWait = new WaitForSeconds(Mathf.Max(0.01f, spawnInterval));
+        if (enemyPool == null)
+        {
+            enemyPool = GetComponent<EnemyPool>();
+        }
         if (targetHealth == null && target != null)
         {
             targetHealth = target.GetComponent<PlayerHealth>();
@@ -59,7 +64,7 @@ public sealed class EnemySpawner : MonoBehaviour
     {
         CleanupInactiveEnemies();
 
-        if (target == null || targetHealth == null || enemyPrefab == null || arenaBounds == null)
+        if (target == null || targetHealth == null || enemyPool == null || arenaBounds == null)
         {
             return;
         }
@@ -75,9 +80,15 @@ public sealed class EnemySpawner : MonoBehaviour
             return;
         }
 
-        EnemyMovement enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        EnemyMovement enemy = enemyPool.Get(spawnPosition, Quaternion.identity);
+        if (enemy == null)
+        {
+            return;
+        }
+
         enemy.SetTarget(target);
         enemy.GetComponent<EnemyAttack>().SetTarget(target, targetHealth);
+        enemy.GetComponent<EnemyAttack>().ResetAttack();
         activeEnemies.Add(enemy);
     }
 
@@ -86,7 +97,8 @@ public sealed class EnemySpawner : MonoBehaviour
         for (int index = activeEnemies.Count - 1; index >= 0; index--)
         {
             EnemyMovement enemy = activeEnemies[index];
-            if (enemy == null || !enemy.gameObject.activeInHierarchy)
+            EnemyHealth health = enemy == null ? null : enemy.GetComponent<EnemyHealth>();
+            if (enemy == null || health == null || health.IsDead || !enemy.gameObject.activeInHierarchy)
             {
                 activeEnemies.RemoveAt(index);
             }

@@ -75,6 +75,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8999281739159907146}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1052489711688014159}
   m_SourcePrefab: {fileID: 100100000, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
 --- !u!1 &3384222176476398048 stripped
 GameObject:
@@ -172,6 +175,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   targetHealth: {fileID: 0}
+  animator: {fileID: 0}
   attackRange: 1.25
   attackInterval: 1
   damage: 10
+  currentCooldown: 0
+--- !u!114 &1052489711688014159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384222176476398048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df36c1d32e8eaf04c962c7f3e4e615c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+  deathAnimationDuration: 2.967
+  animator: {fileID: 6914363315997638178}
+  movement: {fileID: 8539463717144009783}
+  attack: {fileID: 8999281739159907146}
+  separationCollider: {fileID: 0}

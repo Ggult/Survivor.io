@@ -847,6 +847,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1066638318}
   - component: {fileID: 1066638317}
+  - component: {fileID: 1066638319}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -869,8 +870,10 @@ MonoBehaviour:
   enemyPrefab: {fileID: 8539463717144009783, guid: 1ec050ff77ae6a847b9c397c2ba91e54, type: 3}
   arenaBounds: {fileID: 812049442}
   target: {fileID: 191742055}
+  targetHealth: {fileID: 0}
+  enemyPool: {fileID: 1066638319}
   spawnInterval: 2
-  maxActiveEnemies: 20
+  maxActiveEnemies: 1
   minimumSpawnDistance: 4
   spawnMargin: 1
 --- !u!4 &1066638318
@@ -888,6 +891,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1066638319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066638316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43cddd3ff188dc244b895fbfa613816a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 8539463717144009783, guid: 1ec050ff77ae6a847b9c397c2ba91e54, type: 3}
+  initialSize: 20
 --- !u!1 &1789363810
 GameObject:
   m_ObjectHideFlags: 0

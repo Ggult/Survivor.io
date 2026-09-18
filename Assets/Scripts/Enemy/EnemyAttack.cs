@@ -63,4 +63,9 @@ public sealed class EnemyAttack : MonoBehaviour
         targetHealth.TakeDamage(damage);
         currentCooldown = Mathf.Max(0.01f, attackInterval);
     }
+
+    public void ResetAttack()
+    {
+        currentCooldown = 0f;
+    }
 }
