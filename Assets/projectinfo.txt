@@ -1,0 +1,96 @@
+Unity Developer
+AI Destekli Geliştirme ve Optimizasyon
+Amaç
+Sağlanan yüksek detaylı modelleri kullanarak mobil cihazlar için optimize edilmiş, Survivor.io tarzı küçük bir
+oyun geliştirmenizi bekliyoruz.
+Bu çalışmada çalışan oyun kadar; performans problemlerini analiz etmeniz, AI ve MCP araçlarını geliştirme
+sürecine dahil etmeniz ve yaptığınız değişikliklerin sonuçlarını doğrulamanız da önemlidir.
+1. Oyun Gereksinimleri
+Tek bir arenada aşağıdaki oyun döngüsünü oluşturun:
+• Oyuncu, karakteri sanal joystick ile hareket ettirebilmelidir.
+• Karakter, menzilindeki düşmanlara otomatik saldırmalıdır.
+• Düşmanlar dalgalar hâlinde oluşmalı, oyuncuya yaklaşmalı ve hasar verebilmelidir.
+• Oyuncunun amacı üç dakika hayatta kalmaktır.
+• Oyuncunun canı biterse kaybetme, süre tamamlanırsa kazanma ekranı gösterilmelidir.
+• Sonuç ekranında öldürülen düşman sayısı ve yeniden oynama seçeneği bulunmalıdır.
+• Toplam öldürme sayısı oyun kapatılıp açıldığında korunmalıdır.
+Aynı arena için düşman sayısı ve oluşma sıklığı üzerinden ayarlanabilen üç zorluk seviyesi hazırlayın. Ayrı
+sahneler üretmeniz gerekmez.
+Çevre ve UI için basit placeholder öğeler kullanılabilir. Oyuncunun hareketi, saldırılar ve hasar geri bildirimi
+anlaşılır olmalıdır.
+2. Sağlanan Modeller ve Asset Optimizasyonu
+Sağlanan oyuncu, düşman ve silah modellerini kullanın.
+Bu asset’lerin mobil kullanım için hazır olduğunu varsaymayın. Geometri, materyal, texture, rig ve animasyon
+maliyetlerini inceleyerek gerekli optimizasyonları belirleyin.
+Model sadeleştirme, LOD oluşturma, texture çözünürlüğünü düşürme, materyalleri birleştirme ve animasyon
+yaklaşımını değiştirme gibi işlemler serbesttir.
+Yaptığınız değişikliklerde:
+• Karakterlerin tanınabilir görünümünü koruyun.
+• Oyun için gerekli hareket ve saldırı davranışlarını koruyun.
+• Orijinal asset’leri saklayın; optimize edilmiş sürümleri ayrıca oluşturun.
+• Görsel kalite ile performans arasındaki tercihlerinizi açıklayın.
+Sağlanan karakterleri basit geometrilerle veya farklı modellerle değiştirmek kabul edilmez.
+01
+AI Destekli Geliştirme ve Optimizasyon
+SKYLOFT STUDIOS
+GELİŞTİRME SÜRECİ
+3. AI ve MCP Kullanımı
+Unity Developer Case Study
+Geliştirme sürecinde AI destekli araçlar kullanmanız zorunludur. Araç ve model seçimi size aittir.
+Ayrıca Unity’ye bağlı bir MCP üzerinden en az bir anlamlı geliştirme işini uçtan uca tamamlayın. Hazır bir MCP
+entegrasyonu kullanabilirsiniz; özel MCP sunucusu geliştirmeniz beklenmez.
+Seçtiğiniz akış şu adımları içermelidir:
+1. AI’ın araç üzerinden ilgili proje veya Editor durumunu okuması.
+2. Bu bilgiye dayanarak bir işlem gerçekleştirmesi.
+3. İşlem sonucunun araç çıktısı, test veya ölçüm ile doğrulanması.
+Örnek işler:
+• Asset import ayarlarını inceleyip seçilen optimizasyonları uygulamak.
+• Prefab veya sahne kurulumunu yapıp referansların doğruluğunu kontrol etmek.
+• Console hatasını okuyup düzeltmek ve yeniden derlemeyi doğrulamak.
+• Bir performans ölçümü yapıp sonuçlarını almak ve değişiklik sonrasında tekrarlamak.
+Yalnızca MCP bağlantısını kurmak veya AI’dan kod alıp projeye yapıştırmak bu gereksinimi karşılamaz.
+AI tarafından üretilen kod ve değişikliklerin doğruluğundan siz sorumlusunuz. Bunları açıklayabilmeniz ve
+değiştirebilmeniz beklenir.
+4. Performans Analizi ve Optimizasyon
+İlk çalışan sürümünüzü optimizasyon öncesi referans olarak kaydedin. Sonrasında ölçümlere dayanarak
+darboğazları belirleyin ve iyileştirin.
+Çalışmanız sırasında:
+• En önemli performans darboğazlarını tespit edin.
+• İyileştirmeleri beklenen etkilerine göre önceliklendirin.
+• Değişikliklerin etkisini aynı koşullarda tekrar ölçerek doğrulayın.
+• Görsel kalite ile performans arasındaki dengeyi koruyun.
+Özellikle artan düşman yoğunluğunda animasyon, hareket, saldırı, rendering ve nesne oluşturma/yok etme
+maliyetlerini dikkate alın.
+Animator, NavMesh, ECS/DOTS veya belirli bir tasarım kalıbının kullanımı zorunlu değildir. Seçtiğiniz
+yaklaşımın bu oyun ve düşman yoğunluğu için uygunluğunu açıklayabilmeniz beklenir.
+AI Destekli Geliştirme ve Optimizasyon
+02
+SKYLOFT STUDIOS
+PROJE VE TESLİM
+5. Kod ve Proje Yapısı
+Proje açılabilir, çalıştırılabilir ve kolayca incelenebilir olmalıdır.
+• Oyun durumları ve yeniden başlatma akışı doğru çalışmalıdır.
+• Düşman yoğunluğu ve temel oyun parametreleri kolayca değiştirilebilmelidir.
+• Sık oluşturulan ve yok edilen nesnelerin maliyeti yönetilmelidir.
+• Kullanılan paketler ve kurulum adımları belirtilmelidir.
+Unity Developer Case Study
+• Kritik davranışlar için uygun test veya doğrulama adımları sunulmalıdır.
+Çözümünüzü ihtiyaçla orantılı tutun ve mimari tercihlerinizi projenin gereksinimlerine göre yapın.
+6. AI Çalışma Kaydı
+Üç önemli karar için kısa bir çalışma kaydı hazırlayın:
+• AI’a hangi problemi ve bağlamı verdiniz?
+• AI ne önerdi veya değiştirdi?
+• Siz neyi kabul ettiniz, değiştirdiniz ya da reddettiniz?
+• Sonucu nasıl doğruladınız?
+Varsa AI’ın yanlış veya uygun olmayan bir önerisini nasıl fark edip düzelttiğinizi anlatın. Böyle bir örnek yoksa
+belirtmeniz yeterlidir.
+Tüm sohbet geçmişinizi paylaşmanız gerekmez. İlgili kısa alıntılar, araç çıktıları ve değişiklik örnekleri
+yeterlidir. Kayıtlara API anahtarı veya kişisel bilgiler eklemeyin.
+7. Teslimler
+Aşağıdakileri paylaşın:
+1. Git reposu: Unity projesi, kaynak kodu ve gerekli asset’ler. Referans sürüm ile optimize edilmiş son sürüm
+commit veya tag üzerinden ayırt edilebilmelidir.
+2. APK: Çalıştırılabilir Android build.
+3. README: Kurulum, kontroller, kullanılan AI/MCP araçları ve bilinen eksikler.
+4. AI çalışma kaydı: Üç önemli kararın özeti.
+5. Kısa video: 3-5 dakika içinde oyun ve MCP üzerinden tamamlanan işin gösterimi
