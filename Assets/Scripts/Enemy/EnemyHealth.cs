@@ -10,11 +10,15 @@ public sealed class EnemyHealth : MonoBehaviour
     [SerializeField] private EnemyMovement movement;
     [SerializeField] private EnemyAttack attack;
     [SerializeField] private Collider separationCollider;
+    [SerializeField] private ParticleSystem hitParticle;
 
     private static readonly int DeathState = Animator.StringToHash("Base Layer.Enemy Death");
+    private static readonly int HitReactionState = Animator.StringToHash("Hit Reaction");
+    private const string HitReactionLayerName = "Hit Reaction Layer";
     private EnemyPool pool;
     private Coroutine deathRoutine;
     private bool isDead;
+    private int hitReactionLayer = -1;
 
     public float CurrentHealth => currentHealth;
     public float MaximumHealth => maxHealth;
@@ -23,6 +27,7 @@ public sealed class EnemyHealth : MonoBehaviour
     private void Awake()
     {
         CacheComponents();
+        hitReactionLayer = animator == null ? -1 : animator.GetLayerIndex(HitReactionLayerName);
         ResetHealth();
     }
 
@@ -58,8 +63,18 @@ public sealed class EnemyHealth : MonoBehaviour
             separationCollider.enabled = true;
         }
 
+        if (hitParticle != null)
+        {
+            hitParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
         if (animator != null)
         {
+            if (hitReactionLayer >= 0)
+            {
+                animator.SetLayerWeight(hitReactionLayer, 1f);
+            }
+
             animator.Rebind();
             animator.Update(0f);
         }
@@ -80,6 +95,28 @@ public sealed class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0f)
         {
             BeginDeath();
+            return;
+        }
+
+        PlayHitReaction(appliedDamage);
+    }
+
+    private void PlayHitReaction(float appliedDamage)
+    {
+        if (appliedDamage <= 0f || isDead)
+        {
+            return;
+        }
+
+        if (animator != null && hitReactionLayer >= 0)
+        {
+            animator.Play(HitReactionState, hitReactionLayer, 0f);
+        }
+
+        if (hitParticle != null)
+        {
+            hitParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            hitParticle.Play(true);
         }
     }
 
@@ -105,6 +142,11 @@ public sealed class EnemyHealth : MonoBehaviour
 
         if (animator != null)
         {
+            if (hitReactionLayer >= 0)
+            {
+                animator.SetLayerWeight(hitReactionLayer, 0f);
+            }
+
             animator.Play(DeathState, 0, 0f);
         }
 
@@ -142,5 +184,36 @@ public sealed class EnemyHealth : MonoBehaviour
         {
             separationCollider = GetComponent<Collider>();
         }
+
+        if (hitParticle == null)
+        {
+            hitParticle = GetComponentInChildren<ParticleSystem>(true);
+        }
+
+        ConfigureHitParticle();
+    }
+
+    private void ConfigureHitParticle()
+    {
+        if (hitParticle == null)
+        {
+            return;
+        }
+
+        ParticleSystem.MainModule main = hitParticle.main;
+        main.loop = false;
+        main.playOnAwake = false;
+        main.duration = 0.12f;
+        main.startLifetime = 0.12f;
+        main.startSpeed = 1.25f;
+        main.startSize = 0.12f;
+        main.maxParticles = 3;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+        ParticleSystem.EmissionModule emission = hitParticle.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 0f;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 3) });
+        hitParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 }

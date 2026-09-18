@@ -8,6 +8,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
     [SerializeField] private LayerMask enemyLayerMask = 1 << 6;
     [SerializeField] private PlayerRotationDecision rotationDecision;
     [SerializeField] private PlayerCombatAnimation combatAnimation;
+    [SerializeField] private ParticleSystem muzzleFlash;
     [SerializeField] private Transform target;
     [SerializeField] private float currentCooldown;
 
@@ -27,6 +28,13 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         {
             combatAnimation = GetComponent<PlayerCombatAnimation>();
         }
+
+        if (muzzleFlash == null)
+        {
+            muzzleFlash = GetComponentInChildren<ParticleSystem>(true);
+        }
+
+        ConfigureMuzzleFlash();
     }
 
     private void Update()
@@ -49,6 +57,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         }
 
         combatAnimation?.SetFiring(true);
+        PlayMuzzleFlash();
         targetHealth.TakeDamage(damage);
         Debug.Log($"[PlayerAutoAttack] Attacked Enemy for {damage:0.##} damage.", this);
         currentCooldown = Mathf.Max(0.01f, attackInterval);
@@ -61,6 +70,41 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         targetHealth = null;
         rotationDecision?.ClearOverride();
         combatAnimation?.SetFiring(false);
+    }
+
+    private void ConfigureMuzzleFlash()
+    {
+        if (muzzleFlash == null)
+        {
+            return;
+        }
+
+        ParticleSystem.MainModule main = muzzleFlash.main;
+        main.loop = false;
+        main.playOnAwake = false;
+        main.duration = 0.08f;
+        main.startLifetime = 0.06f;
+        main.startSpeed = 0f;
+        main.startSize = 0.12f;
+        main.maxParticles = 1;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+
+        ParticleSystem.EmissionModule emission = muzzleFlash.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 0f;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 1) });
+        muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    private void PlayMuzzleFlash()
+    {
+        if (muzzleFlash == null)
+        {
+            return;
+        }
+
+        muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        muzzleFlash.Play(true);
     }
 
     private bool TryKeepOrFindTarget()

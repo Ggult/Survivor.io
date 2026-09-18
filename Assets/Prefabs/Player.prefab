@@ -1550,7 +1550,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 800666cfacee37141b36e57a9ba3cf2a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 539505611563662063}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 800666cfacee37141b36e57a9ba3cf2a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7214319855571941003}
   m_SourcePrefab: {fileID: 100100000, guid: 800666cfacee37141b36e57a9ba3cf2a, type: 3}
+--- !u!4 &2690158818102334656 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 800666cfacee37141b36e57a9ba3cf2a, type: 3}
+  m_PrefabInstance: {fileID: 2512978133655925547}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3323249283665202810 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 800666cfacee37141b36e57a9ba3cf2a, type: 3}
@@ -1585,6 +1593,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  animator: {fileID: 0}
+  hitReactionLayer: -1
+  hitReactionDuration: 0.6
 --- !u!114 &3050471869390600821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1695,6 +1706,7 @@ MonoBehaviour:
     m_Bits: 64
   rotationDecision: {fileID: 6021609364290999936}
   combatAnimation: {fileID: 7214319855571941003}
+  muzzleFlash: {fileID: 0}
   target: {fileID: 0}
   currentCooldown: 0
 --- !u!114 &7214319855571941003

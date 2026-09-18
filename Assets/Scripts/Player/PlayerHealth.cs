@@ -1,9 +1,16 @@
+using System.Collections;
 using UnityEngine;
 
 public sealed class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private float currentHealth;
+    [SerializeField] private Animator animator;
+    [SerializeField] private int hitReactionLayer = -1;
+    [SerializeField] private float hitReactionDuration = 0.6f;
+
+    private static readonly int HitReactionState = Animator.StringToHash("Hit Reaction");
+    private Coroutine hitReactionRoutine;
 
     public float CurrentHealth => currentHealth;
     public float MaximumHealth => maxHealth;
@@ -11,6 +18,16 @@ public sealed class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+
+        if (animator != null)
+        {
+            hitReactionLayer = animator.GetLayerIndex("Hit Reaction");
+        }
+
         maxHealth = Mathf.Max(0f, maxHealth);
         currentHealth = maxHealth;
     }
@@ -30,11 +47,38 @@ public sealed class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0f)
         {
             Debug.Log("[PlayerHealth] Player reached 0 health.", this);
+            return;
         }
+
+        PlayHitReaction(appliedDamage);
     }
 
     public void RestoreFullHealth()
     {
         currentHealth = maxHealth;
+    }
+
+    private void PlayHitReaction(float appliedDamage)
+    {
+        if (appliedDamage <= 0f || animator == null || animator.layerCount <= hitReactionLayer)
+        {
+            return;
+        }
+
+        if (hitReactionRoutine != null)
+        {
+            StopCoroutine(hitReactionRoutine);
+        }
+
+        animator.SetLayerWeight(hitReactionLayer, 1f);
+        animator.Play(HitReactionState, hitReactionLayer, 0f);
+        hitReactionRoutine = StartCoroutine(ReleaseHitReactionLayer());
+    }
+
+    private IEnumerator ReleaseHitReactionLayer()
+    {
+        yield return new WaitForSeconds(Mathf.Max(0.01f, hitReactionDuration));
+        animator.SetLayerWeight(hitReactionLayer, 0f);
+        hitReactionRoutine = null;
     }
 }
