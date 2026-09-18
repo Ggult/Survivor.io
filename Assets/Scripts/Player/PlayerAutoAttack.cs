@@ -7,6 +7,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
     [SerializeField] private float damage = 10f;
     [SerializeField] private LayerMask enemyLayerMask = 1 << 6;
     [SerializeField] private PlayerRotationDecision rotationDecision;
+    [SerializeField] private PlayerCombatAnimation combatAnimation;
     [SerializeField] private Transform target;
     [SerializeField] private float currentCooldown;
 
@@ -21,6 +22,11 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         {
             rotationDecision = GetComponent<PlayerRotationDecision>();
         }
+
+        if (combatAnimation == null)
+        {
+            combatAnimation = GetComponent<PlayerCombatAnimation>();
+        }
     }
 
     private void Update()
@@ -29,6 +35,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         if (!TryKeepOrFindTarget())
         {
             rotationDecision?.ClearOverride();
+            combatAnimation?.SetFiring(false);
             return;
         }
 
@@ -41,6 +48,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
             return;
         }
 
+        combatAnimation?.SetFiring(true);
         targetHealth.TakeDamage(damage);
         Debug.Log($"[PlayerAutoAttack] Attacked Enemy for {damage:0.##} damage.", this);
         currentCooldown = Mathf.Max(0.01f, attackInterval);
@@ -52,6 +60,7 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         target = null;
         targetHealth = null;
         rotationDecision?.ClearOverride();
+        combatAnimation?.SetFiring(false);
     }
 
     private bool TryKeepOrFindTarget()
