@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -65,6 +69,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 64734703865274893}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8736380649422968842}
   m_SourcePrefab: {fileID: 100100000, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
 --- !u!1 &3384222176476398048 stripped
 GameObject:
@@ -85,6 +92,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   stoppingDistance: 1.25
+  separationRadius: 1.5
+  separationStrength: 0.6
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   target: {fileID: 0}
 --- !u!95 &6914363315997638178
 Animator:
@@ -122,3 +134,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 6914363315997638178}
   movement: {fileID: 8539463717144009783}
+--- !u!135 &8736380649422968842
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384222176476398048}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0.9, z: 0}
