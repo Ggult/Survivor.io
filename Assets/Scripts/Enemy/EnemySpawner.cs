@@ -7,6 +7,7 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private EnemyMovement enemyPrefab;
     [SerializeField] private ArenaBounds arenaBounds;
     [SerializeField] private Transform target;
+    [SerializeField] private PlayerHealth targetHealth;
     [SerializeField] private float spawnInterval = 2f;
     [SerializeField] private int maxActiveEnemies = 20;
     [SerializeField] private float minimumSpawnDistance = 4f;
@@ -20,6 +21,10 @@ public sealed class EnemySpawner : MonoBehaviour
     private void Awake()
     {
         spawnWait = new WaitForSeconds(Mathf.Max(0.01f, spawnInterval));
+        if (targetHealth == null && target != null)
+        {
+            targetHealth = target.GetComponent<PlayerHealth>();
+        }
     }
 
     private void OnEnable()
@@ -54,7 +59,7 @@ public sealed class EnemySpawner : MonoBehaviour
     {
         CleanupInactiveEnemies();
 
-        if (target == null || enemyPrefab == null || arenaBounds == null)
+        if (target == null || targetHealth == null || enemyPrefab == null || arenaBounds == null)
         {
             return;
         }
@@ -72,6 +77,7 @@ public sealed class EnemySpawner : MonoBehaviour
 
         EnemyMovement enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         enemy.SetTarget(target);
+        enemy.GetComponent<EnemyAttack>().SetTarget(target, targetHealth);
         activeEnemies.Add(enemy);
     }
 

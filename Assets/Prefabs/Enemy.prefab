@@ -72,6 +72,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8736380649422968842}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8999281739159907146}
   m_SourcePrefab: {fileID: 100100000, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
 --- !u!1 &3384222176476398048 stripped
 GameObject:
@@ -155,3 +158,20 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &8999281739159907146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384222176476398048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 650e9489135c4ca4eb421ce914849860, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  targetHealth: {fileID: 0}
+  attackRange: 1.25
+  attackInterval: 1
+  damage: 10
