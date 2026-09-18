@@ -8,7 +8,7 @@ The project will use one arena scene, supplied character/enemy/weapon assets, co
 
 ## Current state
 
-M0 Project Setup is in progress. No gameplay code, scene gameplay objects or asset optimization changes have been made yet.
+M1 Player Foundation is complete. The scene contains a player prefab instance with movement and health components, plus a camera follow component.
 
 - Unity: `6000.0.70f1`
 - Render pipeline: URP `17.0.4`
@@ -46,13 +46,14 @@ The initial scene contains the default Main Camera, Directional Light and Global
 ## Documentation
 
 - [M0 project setup](Assets/Documentation/M0-ProjectSetup.md)
+- [M1 player foundation](Assets/Documentation/M1-PlayerFoundation.md)
 - [Asset inventory](Assets/Documentation/AssetInventory.md)
 - [Baseline measurement plan](Assets/Documentation/Performance/BaselinePlan.md)
 - [AI worklog template](Assets/Documentation/AIWorklog/DecisionTemplate.md)
 
 ## Planned controls
 
-Virtual joystick movement. The exact UI and input mapping will be documented when M1 is implemented.
+Virtual joystick movement is implemented in `MobileHUD/VirtualJoystick`; its event is consumed by `MovementInputConsumer`, which exposes the current vector to `PlayerMovement`.
 
 ## Packages and tools
 
