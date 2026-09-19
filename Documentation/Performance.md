@@ -110,6 +110,15 @@
 - FULL PERFORMANCE BASELINE NOT VALIDATED.
 - The next measurement can use the same temporary runtime-only background execution condition, but should still avoid large Profiler captures unless a small, bounded capture workflow is independently verified.
 
+## M5.3 Android Runtime Performance Telemetry
+
+- Added isolated `RuntimePerformanceTelemetry` runtime telemetry with no gameplay or UI layout changes.
+- The telemetry records frame timing/FPS, active and peak enemies, inferred spawns and pool transitions, enemy deaths, managed memory, GC allocations/collections, and Unity memory counters.
+- A development/editor overlay is available during a run. The final report is written at GameOver or Victory to `Application.persistentDataPath/Performance_Android_Baseline.md`.
+- No Unity Profiler capture, Profile Analyzer session, or large profiling data capture was used.
+- Editor smoke test: PASS. The telemetry object bootstrapped in Play Mode and no Unity Error logs were reported.
+- Android device baseline: NOT VALIDATED. The generated device report must be copied to `Documentation/Performance_Android_Baseline.md` after a Development Build run.
+
 ## Easy
 
 - Active enemies: 0 at sample time; steady-state value NOT VALIDATED
