@@ -24,6 +24,12 @@ public sealed class EnemyAnimation : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        hasMovementState = false;
+        wasMoving = false;
+    }
+
     private void Update()
     {
         if (animator == null || movement == null)

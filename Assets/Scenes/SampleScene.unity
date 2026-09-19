@@ -984,6 +984,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1948274632 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3117560429553215702, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
+  m_PrefabInstance: {fileID: 2450463755434884979}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2450463755434884979
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1036,9 +1041,21 @@ PrefabInstance:
       propertyPath: inputSource
       value: 
       objectReference: {fileID: 302537466}
+    - target: {fileID: 3117560429553215702, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3321356454882463584, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1948274632}
     - target: {fileID: 3323249283665202810, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
       propertyPath: m_Name
       value: player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3323249283665202810, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3734964776890609494, guid: d03587251a8789944a4f240582e1dfe3, type: 3}
       propertyPath: arenaBounds

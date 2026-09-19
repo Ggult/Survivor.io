@@ -140,6 +140,11 @@ public sealed class EnemyHealth : MonoBehaviour
             separationCollider.enabled = false;
         }
 
+        if (hitParticle != null)
+        {
+            hitParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
         if (animator != null)
         {
             if (hitReactionLayer >= 0)

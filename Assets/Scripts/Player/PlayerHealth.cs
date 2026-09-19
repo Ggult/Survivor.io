@@ -60,7 +60,7 @@ public sealed class PlayerHealth : MonoBehaviour
 
     private void PlayHitReaction(float appliedDamage)
     {
-        if (appliedDamage <= 0f || animator == null || animator.layerCount <= hitReactionLayer)
+        if (appliedDamage <= 0f || animator == null || hitReactionLayer < 0 || hitReactionLayer >= animator.layerCount)
         {
             return;
         }
