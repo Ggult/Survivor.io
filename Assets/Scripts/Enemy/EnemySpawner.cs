@@ -51,6 +51,21 @@ public sealed class EnemySpawner : MonoBehaviour
         target = newTarget;
     }
 
+    public int MaxActiveEnemies => maxActiveEnemies;
+    public float SpawnInterval => spawnInterval;
+
+    public void ApplyDifficulty(DifficultyConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        spawnInterval = config.SpawnInterval;
+        maxActiveEnemies = config.MaxActiveEnemies;
+        spawnWait = new WaitForSeconds(spawnInterval);
+    }
+
     public void ResetSpawner(Transform newTarget, PlayerHealth newTargetHealth)
     {
         target = newTarget;

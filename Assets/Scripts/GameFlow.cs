@@ -19,6 +19,7 @@ public sealed class GameFlow : MonoBehaviour
     [SerializeField] private EnemyPool enemyPool;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private GameFlowUI gameFlowUI;
+    [SerializeField] private DifficultyController difficultyController;
 
     private GameState state;
     private float remainingTime;
@@ -56,7 +57,19 @@ public sealed class GameFlow : MonoBehaviour
             gameFlowUI.Bind(this);
         }
 
-        StartRun();
+        if (difficultyController != null)
+        {
+            difficultyController.Initialize(enemySpawner);
+        }
+
+        if (gameFlowUI != null && difficultyController != null)
+        {
+            gameFlowUI.ShowDifficultySelection();
+        }
+        else
+        {
+            StartRun();
+        }
     }
 
     private void OnDestroy()
@@ -92,6 +105,11 @@ public sealed class GameFlow : MonoBehaviour
 
     public void StartRun()
     {
+        if (difficultyController != null && difficultyController.SelectedConfig != null && enemySpawner != null)
+        {
+            enemySpawner.ApplyDifficulty(difficultyController.SelectedConfig);
+        }
+
         ResetRunObjects();
         remainingTime = Mathf.Max(0f, gameDuration);
         displayedSeconds = -1;
@@ -99,10 +117,24 @@ public sealed class GameFlow : MonoBehaviour
         SetState(GameState.Playing);
         SetTimer(Mathf.CeilToInt(remainingTime));
         HideResult();
+        if (gameFlowUI != null)
+        {
+            gameFlowUI.HideDifficultySelection();
+        }
     }
 
     public void RestartRun()
     {
+        StartRun();
+    }
+
+    public void SelectDifficulty(Difficulty difficulty)
+    {
+        if (difficultyController == null || !difficultyController.SelectDifficulty(difficulty, enemySpawner))
+        {
+            return;
+        }
+
         StartRun();
     }
 
@@ -268,6 +300,10 @@ public sealed class GameFlow : MonoBehaviour
     private void SetState(GameState newState)
     {
         state = newState;
+        if (gameFlowUI != null)
+        {
+            gameFlowUI.SetGameState(newState);
+        }
     }
 
     private void SetTimer(int seconds)
