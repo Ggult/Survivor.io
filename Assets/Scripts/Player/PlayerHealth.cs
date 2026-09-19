@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 public sealed class PlayerHealth : MonoBehaviour
@@ -11,6 +12,8 @@ public sealed class PlayerHealth : MonoBehaviour
 
     private static readonly int HitReactionState = Animator.StringToHash("Hit Reaction");
     private Coroutine hitReactionRoutine;
+
+    public event Action Died;
 
     public float CurrentHealth => currentHealth;
     public float MaximumHealth => maxHealth;
@@ -47,6 +50,7 @@ public sealed class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0f)
         {
             Debug.Log("[PlayerHealth] Player reached 0 health.", this);
+            Died?.Invoke();
             return;
         }
 
@@ -55,7 +59,17 @@ public sealed class PlayerHealth : MonoBehaviour
 
     public void RestoreFullHealth()
     {
+        if (hitReactionRoutine != null)
+        {
+            StopCoroutine(hitReactionRoutine);
+            hitReactionRoutine = null;
+        }
+
         currentHealth = maxHealth;
+        if (animator != null && hitReactionLayer >= 0 && hitReactionLayer < animator.layerCount)
+        {
+            animator.SetLayerWeight(hitReactionLayer, 0f);
+        }
     }
 
     private void PlayHitReaction(float appliedDamage)

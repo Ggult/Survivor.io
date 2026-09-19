@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 public sealed class EnemyHealth : MonoBehaviour
@@ -19,6 +20,8 @@ public sealed class EnemyHealth : MonoBehaviour
     private Coroutine deathRoutine;
     private bool isDead;
     private int hitReactionLayer = -1;
+
+    public static event Action<EnemyHealth> Died;
 
     public float CurrentHealth => currentHealth;
     public float MaximumHealth => maxHealth;
@@ -124,6 +127,7 @@ public sealed class EnemyHealth : MonoBehaviour
     {
         isDead = true;
         Debug.Log("[EnemyHealth] Enemy died.", this);
+        Died?.Invoke(this);
 
         if (movement != null)
         {

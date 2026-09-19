@@ -51,6 +51,14 @@ public sealed class EnemySpawner : MonoBehaviour
         target = newTarget;
     }
 
+    public void ResetSpawner(Transform newTarget, PlayerHealth newTargetHealth)
+    {
+        target = newTarget;
+        targetHealth = newTargetHealth;
+        activeEnemies.Clear();
+        spawnPointIndex = 0;
+    }
+
     private IEnumerator SpawnLoop()
     {
         while (true)

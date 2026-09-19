@@ -59,6 +59,42 @@ public sealed class EnemyPool : MonoBehaviour
         Debug.Log("[EnemyPool] Enemy returned to pool.", this);
     }
 
+    public void ReturnAll()
+    {
+        availableEnemies.Clear();
+        availableEnemySet.Clear();
+
+        foreach (EnemyMovement enemy in pooledEnemies)
+        {
+            if (enemy == null)
+            {
+                continue;
+            }
+
+            EnemyHealth health = enemy.GetComponent<EnemyHealth>();
+            if (health != null)
+            {
+                health.ResetHealth();
+            }
+
+            EnemyAttack attack = enemy.GetComponent<EnemyAttack>();
+            if (attack != null)
+            {
+                attack.ResetAttack();
+            }
+
+            enemy.SetTarget(null);
+            enemy.enabled = true;
+            if (attack != null)
+            {
+                attack.enabled = true;
+            }
+            enemy.gameObject.SetActive(false);
+            availableEnemySet.Add(enemy);
+            availableEnemies.Enqueue(enemy);
+        }
+    }
+
     private void Prewarm()
     {
         for (int index = 0; index < Mathf.Max(0, initialSize); index++)
