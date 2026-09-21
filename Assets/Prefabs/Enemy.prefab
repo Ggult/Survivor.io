@@ -4971,6 +4971,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_MotionVectors
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: m_ReflectionProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 22c2e624f149e2e4090934e2f6d7994b, type: 2}
+    - target: {fileID: -2839295581537669554, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2988298d662550b46ad96ba9b4ee3674, type: 2}
     - target: {fileID: 919132149155446097, guid: ec5b045bfc6a816408e9a13abc128efb, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -5034,6 +5062,7 @@ MonoBehaviour:
   stoppingDistance: 1.25
   separationRadius: 1.5
   separationStrength: 0.6
+  separationUpdateInterval: 0.08
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -5049,7 +5078,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ba6a991c30edd5a42bb6c6b5cd281e73, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0

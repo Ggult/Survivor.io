@@ -7,11 +7,14 @@ public sealed class EnemyMovement : MonoBehaviour
     [SerializeField] private float stoppingDistance = 1.25f;
     [SerializeField] private float separationRadius = 1.5f;
     [SerializeField] private float separationStrength = 0.6f;
+    [SerializeField] private float separationUpdateInterval = 0.08f;
     [SerializeField] private LayerMask enemyLayerMask = 1 << 6;
     [SerializeField] private Transform target;
 
     private readonly Collider[] separationResults = new Collider[32];
     private Collider ownCollider;
+    private Vector3 cachedSeparationDirection;
+    private float separationUpdateTimer;
 
     public bool IsMoving { get; private set; }
 
@@ -45,7 +48,17 @@ public sealed class EnemyMovement : MonoBehaviour
             return;
         }
 
-        Vector3 separationDirection = CalculateSeparationDirection();
+        if (separationUpdateTimer <= 0f)
+        {
+            cachedSeparationDirection = CalculateSeparationDirection();
+            separationUpdateTimer = Mathf.Max(0.01f, separationUpdateInterval);
+        }
+        else
+        {
+            separationUpdateTimer -= Time.deltaTime;
+        }
+
+        Vector3 separationDirection = cachedSeparationDirection;
         Vector3 finalDirection = (normalizedDirection + separationDirection * separationStrength).normalized;
         if (finalDirection.sqrMagnitude <= Mathf.Epsilon)
         {
@@ -60,6 +73,8 @@ public sealed class EnemyMovement : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
+        cachedSeparationDirection = Vector3.zero;
+        separationUpdateTimer = 0f;
     }
 
     private Vector3 CalculateSeparationDirection()

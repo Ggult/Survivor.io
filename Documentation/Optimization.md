@@ -193,3 +193,112 @@ No candidate is classified HIGH. The available baseline has no CPU/GPU breakdown
 - ~30 FPS behavior: **Not fully explained; no project target/VSync cap found, device/runtime cap remains a hypothesis.**
 - Enemy +1 behavior: **Explained as telemetry counting active death-animation objects while the spawner excludes dead enemies from its capacity list.**
 - Performance improvement claimed: **NO**
+
+## M7.2 - Applied Mobile Optimizations
+
+### Scope and measurement separation
+
+The M6 Android baseline remains the comparison baseline. No Android performance measurement, large Unity Profiler capture, or final FPS claim was made during M7.2. `RuntimePerformanceTelemetry.cs` was intentionally left unchanged so the final Android measurement remains comparable.
+
+The mobile runtime now explicitly targets 60 FPS with vSync disabled. This is a frame-rate request, not a measured guarantee; the final Android benchmark will determine whether the device sustains it under enemy load.
+
+### Applied optimizations
+
+#### Enemy separation query throttling
+
+- **Problem:** Every moving enemy performed `Physics.OverlapSphereNonAlloc` every frame.
+- **Existing implementation:** The query used a reusable buffer, but still consumed physics CPU for every active enemy on every frame.
+- **Change:** `EnemyMovement` now refreshes the separation direction every 0.08 seconds (approximately 12.5 Hz), retains the last result between checks, and keeps movement and rotation per-frame. Target changes force an immediate refresh.
+- **Expected benefit:** Reduced repeated physics-query CPU work as enemy count rises, with no managed allocation increase.
+- **Risk:** Separation response can be slightly less immediate between samples; radius, strength, stopping distance, speed, and basic movement are unchanged.
+- **Validation:** `EnemyMovement.cs` compiled with no diagnostics; prefab and scene smoke validation remains required before the final Android benchmark.
+
+#### Enemy renderer feature removal
+
+- **Problem:** The single Enemy SkinnedMeshRenderer was casting and receiving shadows, using blended probes, and generating object motion vectors.
+- **Existing implementation:** Audit found shadows `On`, receive shadows enabled, blended light/reflection probes, and object motion vectors.
+- **Change:** Enemy renderer now uses shadow casting `Off`, receive shadows disabled, light/reflection probes disabled, and `ForceNoMotion`.
+- **Expected benefit:** Lower per-enemy shadow-map, probe, and motion-vector rendering work and GPU bandwidth.
+- **Risk:** Enemies no longer contribute individual shadows or probe-based lighting; gameplay readability does not depend on enemy shadows.
+- **Validation:** Unity readback confirmed the requested renderer values; mesh, bones, materials, and animation clips were unchanged.
+
+#### Enemy Animator culling
+
+- **Problem:** Enemy Animator was configured as `AlwaysAnimate`.
+- **Change:** Enemy prefab Animator culling mode is now `CullUpdateTransforms`. Script-driven movement, attack timing, controller, parameters, update mode, and root motion behavior remain unchanged.
+- **Expected benefit:** Avoids unnecessary off-screen animation transform updates while retaining state evaluation.
+- **Risk:** Off-screen bone transforms are not updated until visible again; enemy movement is script-driven and root motion is disabled.
+- **Validation:** Unity readback confirmed `CullUpdateTransforms`.
+
+#### Enemy material instancing
+
+- **Problem:** Repeated enemies use the same two shared materials, but instancing was not enabled.
+- **Change:** Enabled `Material.enableInstancing` on both existing shared Enemy materials without creating runtime material instances or replacing shaders.
+- **Expected benefit:** Allows compatible Enemy draws to use GPU instancing where supported, alongside SRP Batcher compatibility.
+- **Risk:** No material properties or appearance were changed.
+- **Validation:** Unity readback confirmed `instancing=True,True` and two shared materials remain assigned.
+
+#### Mobile frame pacing and quality reductions
+
+- **Problem:** No runtime `Application.targetFrameRate` was configured, and the Mobile profile retained avoidable lighting, filtering, and particle budgets.
+- **Existing implementation:** vSync was already 0, but target FPS was unset. Mobile quality used two pixel lights, medium shadows at 40 metres, two cascades, forced anisotropic filtering, realtime GI CPU usage 100, and particle raycast budget 256. Mobile URP used 1024 main shadow resolution, shadow distance 50, and additional lights enabled.
+- **Change:** Added `MobilePerformanceSettings` with `Application.targetFrameRate=60` and `QualitySettings.vSyncCount=0`. Mobile quality now uses zero pixel lights, low shadow resolution, one cascade, 20 metre shadow distance, disabled anisotropic filtering, zero realtime GI CPU usage, and particle raycast budget 64. Mobile URP main shadow resolution is 512, shadow distance 20, and additional lights are disabled.
+- **Expected benefit:** Lower global GPU/CPU lighting, shadow, texture-filtering, and particle physics cost while allowing the device to target 60 FPS.
+- **Risk:** Lower scene lighting/shadow quality, reduced texture anisotropy, and less particle collision precision. These are deliberate mobile visual concessions requested for this pass.
+- **Validation:** Runtime readback confirmed target FPS 60, vSync 0, shadow distance 20, Low shadow resolution, one cascade, zero pixel lights, disabled anisotropic filtering, and particle budget 64.
+
+The already accepted M7.1 changes remain active:
+
+- `EnemySpawner` caches `EnemyAttack` and `EnemyHealth` references after pooling.
+- `EnemyAttack` no longer performs a per-frame fallback `GetComponent<Animator>` lookup; the `Enemy.prefab` reference is serialized to its existing Animator.
+- Combat, damage, death, and pool diagnostic logs are development/editor-only.
+
+These changes preserve gameplay ownership and do not change spawn interval, enemy limits, attack timing/damage, death timing, pooling semantics, or targeting behavior. Their expected benefit is reduced avoidable CPU/logging work; final impact will be measured only in the final Android validation.
+
+### Rejected / Not Applied
+
+#### Enemy separation
+
+`EnemyMovement` still uses `Physics.OverlapSphereNonAlloc` with a reusable 32-entry buffer. The query frequency was reduced, but its radius, strength, layer mask, buffer size, and movement behavior were intentionally preserved. The M6 Hard telemetry peak of 26 is explained by death-animation lifecycle counting rather than a spawner limit change.
+
+#### Player target scanning
+
+`PlayerAutoAttack` uses `OverlapSphereNonAlloc` and a reusable 64-entry buffer. Changing scan cadence or targeting order would touch explicitly protected targeting behavior, so it was left unchanged.
+
+#### URP and rendering settings
+
+The mobile URP asset already has opaque and depth textures disabled, MSAA disabled, one main-light shadow cascade, no renderer features, no additional light shadows, and a render scale of 0.8. Global shadow distance/resolution and post-processing were left unchanged because they affect player and scene readability; a controlled GPU comparison is needed before changing them.
+
+#### Assets, textures, meshes, and animation imports
+
+The supplied asset tree is approximately 219 MB and includes the approximately 98 MB `enemy.fbx`, separate animation FBX files, textures, and source material data. The original supplied assets were not overwritten. No imported mesh, texture, FBX animation, humanoid retargeting, Animator controller, skin quality, or existing animation clip was changed because compatibility risk is material and no safe reduced variant was available.
+
+#### Runtime telemetry
+
+Telemetry polling uses `FindObjectsByType` every 0.25 seconds and is a known measurement overhead. It was not changed because it is required for the final measurement and changing sampling semantics would weaken comparison with M6.
+
+#### Gameplay and project configuration
+
+Difficulty values, spawn interval, maximum enemies, pooling, player behavior, enemy attack/death behavior, UI, camera, arena, Muzzle Flash, and GameFlow were not changed. Texture import settings, physics collision matrix, package, architecture layer, ECS/DOTS system, NavMesh system, and profiler capture were not changed.
+
+### Validation
+
+- Unity AssetDatabase refresh completed successfully after the M7.1 state was inspected.
+- `EnemyMovement.cs` reported no editor diagnostics after the separation change.
+- Enemy prefab smoke validation confirmed the Animator reference, EnemyMovement, EnemyHealth, and EnemyAttack components are present and correctly wired.
+- Unity audit and post-write readback confirmed the Enemy renderer and Animator optimization values.
+- Both shared Enemy materials report GPU instancing enabled.
+- No Unity test assembly is present, so automated EditMode tests were unavailable (`No tests found`).
+- Play Mode end-to-end validation and the final Android measurement remain pending and must happen after project completion.
+
+### M7.2 result
+
+Gameplay behavior changed: **NO**
+
+New runtime/rendering/quality optimizations applied: **YES**
+
+Rendering and quality settings changed: **YES** (Enemy prefab renderer plus Mobile profile)
+
+Performance improvement claimed: **NO**
+
+Remaining possible bottlenecks are global lighting/post-processing cost, texture/import footprint, and residual skinning/material cost. Final performance impact will be measured in the final Android benchmark. The exact next step is: **FINAL ANDROID MEASUREMENT AFTER PROJECT COMPLETION**.
