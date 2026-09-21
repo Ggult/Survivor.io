@@ -8,7 +8,7 @@ The project will use one arena scene, supplied character/enemy/weapon assets, co
 
 ## Current state
 
-M1 Player Foundation is complete. The scene contains a player prefab instance with movement and health components, plus a camera follow component.
+The playable case-study loop is complete in one arena scene. The player moves with a virtual joystick, attacks enemies automatically, enemies spawn in configurable waves, deal damage, and are pooled. The run ends after three minutes or when the player dies, and the result panel supports replay and kill totals.
 
 - Unity: `6000.0.70f1`
 - Render pipeline: URP `17.0.4`
@@ -32,16 +32,12 @@ The initial scene contains the default Main Camera, Directional Light and Global
 | Milestone | Scope |
 |---|---|
 | M0 | Project setup, inventory and documentation |
-| M1 | Player movement and health |
-| M2 | Enemy movement, damage and pooling |
-| M3 | Auto attack, projectiles and combat |
-| M4 | Game flow, timer, result screens and replay |
-| M5 | Difficulty and persistent total kill count |
-| M6 | Optimization-before baseline |
-| M7 | Measurement-driven optimization |
-| M8 | End-to-end Unity MCP workflow |
-| M9 | Tests and validation |
-| M10 | README, APK, video and final delivery |
+| M1-M5 | Player, enemies, combat, game flow, replay, difficulty and persistent total kills |
+| M6 | Android runtime baseline before optimization |
+| M7.1-M7.2 | Measurement-driven mobile CPU/GPU/model optimizations |
+| M8 | End-to-end Unity MCP workflow and validation |
+| M9 | Manual runtime validation; no automated test assembly is currently included |
+| M10 | Repository delivery documentation; APK/video remain external delivery artifacts |
 
 ## Documentation
 
@@ -61,11 +57,25 @@ The project uses URP, Input System, Unity Test Framework and Unity MCP. Exact pa
 
 ## Performance status
 
-No gameplay baseline has been measured yet. Baseline scenarios and metrics are defined in [BaselinePlan.md](Assets/Documentation/Performance/BaselinePlan.md).
+Android runtime measurements were captured on a Huawei COR-L29 using the same telemetry format before and after optimization. The optimized Medium run reached 60.02 FPS average and the optimized Hard run reached 59.02 FPS average. The exact reports are stored under [BeforeOptimization](Assets/PerformanceAnalysis/BeforeOptimization) and [AfterOptimization](Assets/PerformanceAnalysis/AfterOptimization). The comparison and optimization rationale are documented in [Optimization.md](Documentation/Optimization.md).
 
-## Known limitations
+## AI and MCP workflow
 
-- Gameplay systems are not implemented yet.
-- Android APK has not been produced yet.
-- Supplied asset geometry, materials and texture import settings still require measurement.
+The project used GitHub Copilot and Unity MCP for scene/prefab inspection, asset and renderer changes, compilation refreshes, runtime smoke checks, and validation readbacks. The decisions, accepted changes, rejected alternatives, and evidence are recorded in [AI_Worklog.md](Documentation/AI_Worklog.md).
+
+## Validation status
+
+- Build scene: `Assets/Scenes/SampleScene.unity` is enabled in `EditorBuildSettings.asset`.
+- Difficulty configurations: Easy, Medium and Hard use the same arena and expose enemy count/spawn interval through `DifficultyConfig` assets.
+- Persistence: lifetime enemy kills are stored with `PlayerPrefs` under `Survivor.TotalKills` and shown on the result panel.
+- Pooling: enemies are prewarmed and returned to `EnemyPool` instead of repeatedly instantiated and destroyed during play.
+- Android: before/after runtime reports are present; no Unity Profiler capture was used.
+- Automated tests: no Unity test assembly is currently present; manual Unity/MCP smoke validation is documented.
+
+## Known limitations and external delivery items
+
+- An APK is not committed to the repository; build it from the enabled scene using the Unity Android build target before sending the submission email.
+- The requested 3-5 minute video and the final repository/APK link email are external submission steps and are not generated inside the Unity project.
+- Runtime telemetry does not provide a CPU/GPU timeline or graphics-driver memory value; those fields remain unavailable on the target device.
+- The optimized models intentionally trade silhouette/deformation fidelity for mobile performance. Original supplied FBX files remain preserved under `Assets/case_models`.
 

@@ -247,6 +247,23 @@ The mobile runtime now explicitly targets 60 FPS with vSync disabled. This is a 
 - **Risk:** Lower scene lighting/shadow quality, reduced texture anisotropy, and less particle collision precision. These are deliberate mobile visual concessions requested for this pass.
 - **Validation:** Runtime readback confirmed target FPS 60, vSync 0, shadow distance 20, Low shadow resolution, one cascade, zero pixel lights, disabled anisotropic filtering, and particle budget 64.
 
+#### Camera and Mobile URP GPU reductions
+
+- **Problem:** The active scene camera still allowed HDR, camera MSAA, URP post-processing, and camera shadow rendering even though the Mobile URP asset already disabled MSAA and the Global Volume weight was zero.
+- **Change:** Main Camera HDR and MSAA permission are disabled. `UniversalAdditionalCameraData` now disables post-processing and shadow rendering. Mobile URP main-light shadow support is disabled as a pipeline-level safeguard.
+- **Expected benefit:** Removes HDR buffer bandwidth, unnecessary post-processing checks, camera shadow work, and mobile main-light shadow variants from the active rendering path.
+- **Risk:** Lower scene contrast/effects and no camera-rendered shadows. The scene's Global Volume already had weight 0 and the Directional Light already had shadow type None, so no active gameplay lighting dependency was removed.
+- **Validation:** Unity readback confirmed camera HDR/MSAA/post-processing/shadow flags are disabled; the Mobile URP asset reports main-light shadows unsupported.
+
+#### Skinned mesh triangle reduction
+
+- **Problem:** The supplied skinned models carried more geometry than needed for the requested mobile visual-quality tradeoff: Enemy `36,902` tris and Player `19,450` tris total.
+- **Change:** Blender-generated optimized FBX copies were created without modifying the original source FBX files. Unity mesh assets were then generated from those copies, with bone weights and bind poses remapped to the existing prefab bone order before assignment.
+- **Result:** Enemy `36,902 -> 18,450` tris (`50.0%` reduction). Player `19,450 -> 9,724` tris (`50.01%` reduction).
+- **Preserved:** Enemy 52-bone prefab binding, Player 69-bone prefab bindings, existing materials, Animator/controller references, prefab hierarchy, colliders, and gameplay scripts.
+- **Risk:** Silhouette and deformation quality may degrade, especially at close range. The original FBX files remain available for rollback.
+- **Validation:** Unity readback confirmed optimized mesh references, matching bone and bind-pose counts, and preserved material counts. Final visual animation smoke and Android FPS measurement remain required.
+
 The already accepted M7.1 changes remain active:
 
 - `EnemySpawner` caches `EnemyAttack` and `EnemyHealth` references after pooling.
@@ -267,7 +284,7 @@ These changes preserve gameplay ownership and do not change spawn interval, enem
 
 #### URP and rendering settings
 
-The mobile URP asset already has opaque and depth textures disabled, MSAA disabled, one main-light shadow cascade, no renderer features, no additional light shadows, and a render scale of 0.8. Global shadow distance/resolution and post-processing were left unchanged because they affect player and scene readability; a controlled GPU comparison is needed before changing them.
+The mobile URP asset has opaque and depth textures disabled, MSAA disabled, no renderer features, no additional light shadows, no main-light shadows, and a render scale of 0.8. Main Camera HDR, camera MSAA, post-processing, and camera shadow rendering are also disabled. The Global Volume remains in the scene with weight 0, and the Directional Light already had shadow type None.
 
 #### Assets, textures, meshes, and animation imports
 
@@ -297,7 +314,7 @@ Gameplay behavior changed: **NO**
 
 New runtime/rendering/quality optimizations applied: **YES**
 
-Rendering and quality settings changed: **YES** (Enemy prefab renderer plus Mobile profile)
+Rendering and quality settings changed: **YES** (Enemy prefab renderer, Mobile profile, Mobile URP, Main Camera, and skinned mesh assets)
 
 Performance improvement claimed: **NO**
 

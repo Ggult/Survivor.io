@@ -31,7 +31,7 @@ public sealed class ResultPanelUI : MonoBehaviour
         }
     }
 
-    public void Show(string title, int killCount)
+    public void Show(string title, int killCount, int totalKillCount)
     {
         if (resultTitle != null)
         {
@@ -40,7 +40,7 @@ public sealed class ResultPanelUI : MonoBehaviour
 
         if (killCountText != null)
         {
-            killCountText.text = string.Format("ENEMIES DEFEATED: {0}", killCount);
+            killCountText.text = string.Format("ENEMIES DEFEATED: {0}\nTOTAL DEFEATED: {1}", killCount, totalKillCount);
         }
 
         if (panelRoot != null)

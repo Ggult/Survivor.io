@@ -3,6 +3,7 @@ using UnityEngine;
 
 public enum GameState
 {
+    WaitingForDifficulty,
     Playing,
     GameOver,
     Victory
@@ -10,6 +11,8 @@ public enum GameState
 
 public sealed class GameFlow : MonoBehaviour
 {
+    private const string TotalKillsKey = "Survivor.TotalKills";
+
     [SerializeField] private float gameDuration = 180f;
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private PlayerMovement playerMovement;
@@ -25,15 +28,18 @@ public sealed class GameFlow : MonoBehaviour
     private float remainingTime;
     private int displayedSeconds = -1;
     private int currentRunKills;
+    private int totalKills;
     private Vector3 playerStartPosition;
     private Quaternion playerStartRotation;
     private bool hasPlayerStartTransform;
     public GameState State => state;
     public float RemainingTime => remainingTime;
     public int CurrentRunKills => currentRunKills;
+    public int TotalKills => totalKills;
 
     private void Awake()
     {
+        totalKills = Mathf.Max(0, PlayerPrefs.GetInt(TotalKillsKey, 0));
         CacheReferences();
         if (playerTransform != null)
         {
@@ -64,6 +70,7 @@ public sealed class GameFlow : MonoBehaviour
 
         if (gameFlowUI != null && difficultyController != null)
         {
+            SetState(GameState.WaitingForDifficulty);
             gameFlowUI.ShowDifficultySelection();
         }
         else
@@ -174,6 +181,9 @@ public sealed class GameFlow : MonoBehaviour
         if (state == GameState.Playing)
         {
             currentRunKills++;
+            totalKills++;
+            PlayerPrefs.SetInt(TotalKillsKey, totalKills);
+            PlayerPrefs.Save();
         }
     }
 
@@ -318,7 +328,7 @@ public sealed class GameFlow : MonoBehaviour
     {
         if (gameFlowUI != null)
         {
-            gameFlowUI.ShowGameOver(currentRunKills);
+            gameFlowUI.ShowGameOver(currentRunKills, totalKills);
         }
     }
 
@@ -326,7 +336,7 @@ public sealed class GameFlow : MonoBehaviour
     {
         if (gameFlowUI != null)
         {
-            gameFlowUI.ShowVictory(currentRunKills);
+            gameFlowUI.ShowVictory(currentRunKills, totalKills);
         }
     }
 

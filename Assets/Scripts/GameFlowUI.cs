@@ -54,19 +54,19 @@ public sealed class GameFlowUI : MonoBehaviour
         }
     }
 
-    public void ShowGameOver(int killCount)
+    public void ShowGameOver(int killCount, int totalKillCount)
     {
         if (resultPanel != null)
         {
-            resultPanel.Show("GAME OVER", killCount);
+            resultPanel.Show("GAME OVER", killCount, totalKillCount);
         }
     }
 
-    public void ShowVictory(int killCount)
+    public void ShowVictory(int killCount, int totalKillCount)
     {
         if (resultPanel != null)
         {
-            resultPanel.Show("VICTORY", killCount);
+            resultPanel.Show("VICTORY", killCount, totalKillCount);
         }
     }
 

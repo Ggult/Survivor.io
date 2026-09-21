@@ -23,7 +23,7 @@ M7.2 was an evidence-based final optimization inspection after M7.1. The M6 Andr
 - **Evidence:** Mobile URP already disables depth and opaque textures, uses MSAA value 1, has an empty renderer feature list, disables additional light shadows, and uses a reduced render scale of 0.8. The scene still contains visual lighting and post-processing-related configuration.
 - **Decision:** Rejected as an implementation change.
 - **Reason:** There is no GPU timing, overdraw, or thermal evidence supporting a particular setting change. Disabling HDR, main-light shadows, or volume effects could regress visual correctness.
-- **Validation:** Mobile URP asset, mobile renderer asset, quality settings, scene settings, and active Unity scene components were inspected. No rendering setting changed.
+- **Validation:** Mobile URP asset, mobile renderer asset, quality settings, scene settings, and active Unity scene components were inspected. No rendering setting changed **during this initial conservative pass**; the later Mobile 60 FPS revision superseded this decision.
 - **Expected impact:** None claimed. Controlled A/B GPU-oriented measurement is required before changing these settings.
 
 ### Decision 3: Asset, texture, mesh, and animation imports
@@ -121,14 +121,14 @@ The initial M7.2 pass was intentionally conservative. This revision applied the 
 - **Validation:** Unity readback confirmed both materials report instancing enabled and the renderer still has two shared materials.
 - **Expected impact:** Allows compatible Enemy draws to use GPU instancing; final impact awaits the Android benchmark.
 
-### Deliberately unchanged areas
+### Initially deliberately unchanged areas
 
-Global URP shadow/post-processing settings, texture and FBX imports, skin quality, PlayerAutoAttack targeting, physics collision matrix, RuntimePerformanceTelemetry, gameplay limits, and Muzzle Flash were left unchanged. The first group affects broader visual quality, the asset changes lack a safe verified variant, targeting and telemetry are protected contracts, and the remaining gameplay settings would alter behavior rather than optimize implementation.
+During the initial conservative pass, global URP shadow/post-processing settings, texture and FBX imports, skin quality, PlayerAutoAttack targeting, physics collision matrix, RuntimePerformanceTelemetry, gameplay limits, and Muzzle Flash were left unchanged. The later Mobile 60 FPS revision applied the camera and Mobile URP reductions documented below. Texture/import settings, targeting, telemetry, and gameplay limits remain unchanged.
 
 ### Revised final state
 
 - Runtime/rendering optimizations applied: Yes.
-- Global project/quality settings changed: No.
+- Global project/quality settings changed: No **at this historical checkpoint**; the later Mobile 60 FPS revision changed the Mobile quality and URP settings.
 - Android benchmark performed: No.
 - Large profiler capture performed: No.
 - Final performance impact claimed: No.
@@ -158,3 +158,41 @@ The main risks are reduced scene shadow quality, flatter lighting, less anisotro
 ### Intentionally unchanged
 
 `RuntimePerformanceTelemetry.cs`, gameplay limits/timing, PlayerAutoAttack targeting, texture import settings, and final Android measurement remain unchanged. The next step is **FINAL ANDROID PERFORMANCE MEASUREMENT**.
+
+## Skinned Model Triangle Reduction
+
+### Applied changes
+
+- Blender 5.2.2 generated `Assets/case_models/Optimized/enemy_optimized.fbx` and `player_optimized.fbx` from the original model files.
+- The original `Assets/case_models/enemy.fbx` and `player.fbx` files were not overwritten.
+- Unity mesh assets were generated under `Assets/case_models/Optimized/UnityMeshes/`.
+- Bone weights and bind poses were remapped to each existing prefab's bone order before assigning the generated meshes.
+- `Enemy.prefab` now uses `18,450` tris instead of `36,902`.
+- `Player.prefab` now uses `9,724` tris instead of `19,450` total.
+
+### Validation and decision
+
+Accepted for the requested mobile performance push. Unity readback confirmed Enemy `52` bones / `52` bind poses, Player `69` bones / `69` bind poses, and preserved material counts. Existing Animator, prefab hierarchy, colliders, and gameplay scripts were left intact. Original FBX sources remain available for rollback. Visual animation smoke and the final Android benchmark are still required.
+
+## Mobile Camera and URP GPU Reduction
+
+### Applied changes
+
+- Main Camera HDR disabled.
+- Main Camera MSAA permission disabled.
+- URP post-processing disabled on the Main Camera.
+- URP camera shadow rendering disabled on the Main Camera.
+- Mobile URP main-light shadow support disabled at the pipeline level.
+
+### Validation and decision
+
+Accepted for the user-requested image-quality tradeoff. The Global Volume remains present but has weight `0`, and the Directional Light already had shadow type `None`; therefore no active scene effect was removed from those objects. Unity readback confirmed the camera flags and Mobile URP shadow support are disabled.
+
+Texture/FBX import settings, telemetry sampling, gameplay limits, pooling, targeting, and Muzzle Flash remain unchanged because the documented audit found no safe verified variant or changing them would invalidate the measurement/gameplay contract. The final Android benchmark is still required to measure the real FPS result.
+
+## Final delivery completion: lifetime kill persistence
+
+- **Problem/context:** The case study requires the total enemy kill count to survive closing and reopening the game. The existing flow only tracked `currentRunKills` in memory.
+- **Change:** `GameFlow` now loads `Survivor.TotalKills` from `PlayerPrefs`, increments and saves it on each enemy death, and passes the lifetime value to the result panel. The result panel shows both the current run and lifetime totals.
+- **Decision:** Accepted because it satisfies the persistence requirement without introducing a new service or changing gameplay ownership.
+- **Validation:** A Unity runtime smoke seeded total kills to `123`, entered Play Mode, and read back `TOTAL=123` with `STATE=WaitingForDifficulty`, visible difficulty selection, and a hidden result panel. The temporary preference was removed afterward; touched scripts reported no diagnostics.
