@@ -59,7 +59,9 @@ public sealed class PlayerAutoAttack : MonoBehaviour
         combatAnimation?.SetFiring(true);
         PlayMuzzleFlash();
         targetHealth.TakeDamage(damage);
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log($"[PlayerAutoAttack] Attacked Enemy for {damage:0.##} damage.", this);
+    #endif
         currentCooldown = Mathf.Max(0.01f, attackInterval);
     }
 

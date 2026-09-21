@@ -1209,6 +1209,10 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 2742187172224815464, guid: d53c37b1b0b3b294abed30a7643d0d31, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3318717512237285937, guid: d53c37b1b0b3b294abed30a7643d0d31, type: 3}
       propertyPath: timerRoot
       value: 
@@ -1300,6 +1304,10 @@ PrefabInstance:
     - target: {fileID: 7086018544702609955, guid: d53c37b1b0b3b294abed30a7643d0d31, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -55.30005
+      objectReference: {fileID: 0}
+    - target: {fileID: 8242153496013047603, guid: d53c37b1b0b3b294abed30a7643d0d31, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9065305107691404415, guid: d53c37b1b0b3b294abed30a7643d0d31, type: 3}
       propertyPath: m_AnchorMax.x

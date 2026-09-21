@@ -32,11 +32,6 @@ public sealed class EnemyAttack : MonoBehaviour
 
     private void Update()
     {
-        if (animator == null)
-        {
-            animator = GetComponent<Animator>();
-        }
-
         if (target == null || targetHealth == null || targetHealth.IsDead)
         {
             return;
@@ -59,7 +54,9 @@ public sealed class EnemyAttack : MonoBehaviour
             animator.Play(AttackState, 0, 0f);
         }
 
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log($"[EnemyAttack] Enemy attacked Player for {damage:0.##} damage.", this);
+    #endif
         targetHealth.TakeDamage(damage);
         currentCooldown = Mathf.Max(0.01f, attackInterval);
     }

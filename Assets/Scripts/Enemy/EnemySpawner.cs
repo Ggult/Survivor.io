@@ -15,6 +15,8 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnMargin = 1f;
 
     private readonly List<EnemyMovement> activeEnemies = new List<EnemyMovement>();
+    private readonly Dictionary<EnemyMovement, EnemyAttack> enemyAttacks = new Dictionary<EnemyMovement, EnemyAttack>();
+    private readonly Dictionary<EnemyMovement, EnemyHealth> enemyHealth = new Dictionary<EnemyMovement, EnemyHealth>();
     private WaitForSeconds spawnWait;
     private Coroutine spawnRoutine;
     private int spawnPointIndex;
@@ -109,9 +111,10 @@ public sealed class EnemySpawner : MonoBehaviour
             return;
         }
 
+        CacheEnemyComponents(enemy);
         enemy.SetTarget(target);
-        enemy.GetComponent<EnemyAttack>().SetTarget(target, targetHealth);
-        enemy.GetComponent<EnemyAttack>().ResetAttack();
+        enemyAttacks[enemy].SetTarget(target, targetHealth);
+        enemyAttacks[enemy].ResetAttack();
         activeEnemies.Add(enemy);
     }
 
@@ -120,11 +123,34 @@ public sealed class EnemySpawner : MonoBehaviour
         for (int index = activeEnemies.Count - 1; index >= 0; index--)
         {
             EnemyMovement enemy = activeEnemies[index];
-            EnemyHealth health = enemy == null ? null : enemy.GetComponent<EnemyHealth>();
+            if (enemy != null)
+            {
+                CacheEnemyComponents(enemy);
+            }
+
+            EnemyHealth health = enemy == null ? null : enemyHealth[enemy];
             if (enemy == null || health == null || health.IsDead || !enemy.gameObject.activeInHierarchy)
             {
                 activeEnemies.RemoveAt(index);
             }
+        }
+    }
+
+    private void CacheEnemyComponents(EnemyMovement enemy)
+    {
+        if (enemy == null)
+        {
+            return;
+        }
+
+        if (!enemyAttacks.ContainsKey(enemy))
+        {
+            enemyAttacks.Add(enemy, enemy.GetComponent<EnemyAttack>());
+        }
+
+        if (!enemyHealth.ContainsKey(enemy))
+        {
+            enemyHealth.Add(enemy, enemy.GetComponent<EnemyHealth>());
         }
     }
 

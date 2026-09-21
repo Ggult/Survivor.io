@@ -93,7 +93,9 @@ public sealed class EnemyHealth : MonoBehaviour
         float previousHealth = currentHealth;
         currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
         float appliedDamage = previousHealth - currentHealth;
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log($"[EnemyHealth] Damage: {appliedDamage:0.##} | Current Health: {currentHealth:0.##}/{maxHealth:0.##}", this);
+    #endif
 
         if (currentHealth <= 0f)
         {
@@ -126,7 +128,9 @@ public sealed class EnemyHealth : MonoBehaviour
     private void BeginDeath()
     {
         isDead = true;
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log("[EnemyHealth] Enemy died.", this);
+    #endif
         Died?.Invoke(this);
 
         if (movement != null)

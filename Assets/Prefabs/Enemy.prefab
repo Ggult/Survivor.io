@@ -5109,7 +5109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   targetHealth: {fileID: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 6914363315997638178}
   attackRange: 1.25
   attackInterval: 1
   damage: 10

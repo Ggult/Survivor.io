@@ -43,7 +43,9 @@ public sealed class EnemyPool : MonoBehaviour
 
         health.SetPool(this);
         health.ResetHealth();
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log("[EnemyPool] Enemy retrieved from pool.", enemy);
+    #endif
         return enemy;
     }
 
@@ -56,7 +58,9 @@ public sealed class EnemyPool : MonoBehaviour
 
         enemy.gameObject.SetActive(false);
         availableEnemies.Enqueue(enemy);
+    #if DEVELOPMENT_BUILD || UNITY_EDITOR
         Debug.Log("[EnemyPool] Enemy returned to pool.", this);
+    #endif
     }
 
     public void ReturnAll()
